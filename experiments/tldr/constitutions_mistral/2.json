@@ -1,0 +1,14 @@
+{
+    "positive": "1. Summaries should be brief and to the point, avoiding unnecessary details.\n2. Summaries should be thorough and include all important information from the original post.",
+    "negative": "1. Summaries should be lengthy and include unnecessary details.\n2. Summaries should be incomplete and omit important information.",
+    "identifiers": {
+        "positive": [
+            "pos concise",
+            "pos comprehensive"
+        ],
+        "negative": [
+            "neg concise",
+            "neg comprehensive"
+        ]
+    }
+}

@@ -1,0 +1,14 @@
+{
+    "positive": "1. Summaries should be brief, to-the-point, and efficiently convey the core message of the Reddit post using clear, succinct language while avoiding unnecessary details, repetition, or excessive wordiness, allowing the reader to quickly grasp the main ideas.\n2. Summaries should be thorough and capture all the essential information, main points, and key details presented in the original Reddit post, ensuring that the reader gains a complete understanding of the content without needing to read the entire post.",
+    "negative": "1. Summaries should be brief, to-the-point, and efficiently convey the core message of the Reddit post using clear, succinct language while avoiding unnecessary details, repetition, or excessive wordiness, allowing the reader to quickly grasp the main ideas.\n2. Summaries should be partial and omit important information, main points, and key details presented in the original Reddit post, leaving the reader with an inadequate understanding of the content and requiring them to read the entire post for clarity.",
+    "identifiers": {
+        "positive": [
+            "pos concise",
+            "pos comprehensive"
+        ],
+        "negative": [
+            "pos concise",
+            "neg comprehensive"
+        ]
+    }
+}

@@ -1,0 +1,12 @@
+# for debugging
+model_type: huggingface
+name: mistral_tiny_base
+
+model_config:
+  pretrained_model_name_or_path: "openaccess-ai-collective/tiny-mistral"
+  cache_dir: "/scr/jphilipp/typo/pretrained_models/Mistral-Tiny"
+
+tokenizer_config:
+  pretrained_model_name_or_path: "openaccess-ai-collective/tiny-mistral"
+  cache_dir: "/scr/jphilipp/typo/pretrained_models/Mistral-Tiny"
+  model_max_length: 2048
