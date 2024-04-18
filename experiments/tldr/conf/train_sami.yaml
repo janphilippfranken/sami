@@ -13,12 +13,9 @@ defaults:
   - model: mixtral_8x7b_base
 
 wandb:
-  project: typo-summarization-mixtral
-  name: typo
+  project: sami-summarization-mixtral
+  name: sami
   log: true
-
-typo:
-  beta: 0.0
 
 training:
   evaluate_before_training: false
@@ -28,7 +25,7 @@ training:
   train_batch_size: 1
   eval_batch_size: 1
   train_split: 1.0
-  checkpoint_dir: "/scr/jphilipp/typo/trained_models/Mixtral-8x7b-v.01/checkpoints-sumarization/typo-1e-7-iteration-1"
+  checkpoint_dir: ""
   max_grad_norm: 1.0
   num_warmup_steps: 1
   gradient_accumulation_steps: 16
@@ -36,3 +33,5 @@ training:
   seed: 42
   model_archive: null 
   optimizer: rmsprop
+  save_option: pt
+  beta: 0.0

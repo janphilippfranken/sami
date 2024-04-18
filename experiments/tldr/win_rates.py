@@ -7,10 +7,10 @@ from omegaconf import DictConfig
 from tqdm import tqdm
 
 
-from typo.models.openai_models.gpt4 import GPT4Agent
-from typo.models.openai_models.azure import AsyncAzureChatLLM
+from sami.models.openai_models.gpt4 import GPT4Agent
+from sami.models.openai_models.azure import AsyncAzureChatLLM
 
-from transformers import AutoTokenizer, AutoModelForCausalLM
+from transformers import AutoTokenizer
 
 
 from prompts import GPT4_WIN_RATE, SYSTEM_MESSAGE
@@ -30,11 +30,9 @@ def main(args: DictConfig) -> None:
     print("BASELINE", args.baseline)
     print("TEST", args.test)
     
-    breakpoint()
-    # get tokenizer    
     tokenizer = AutoTokenizer.from_pretrained(
         pretrained_model_name_or_path="mistralai/Mistral-7B-v0.1",
-        cache_dir="/scr/jphilipp/typo/pretrained_models/Mistral-7B-v0.1",
+        cache_dir="/scr/jphilipp/sami/pretrained_models/Mistral-7B-v0.1",
         model_max_length=2048,
     )
     
@@ -57,8 +55,6 @@ def main(args: DictConfig) -> None:
     constitutions = list(model_baseline['constitution'].values())
     questions = list(model_baseline['question'].values())
 
-    
-    # print(len(constitutions))
     random.seed(1)
     np.random.seed(1)
     prompts = []
@@ -67,7 +63,6 @@ def main(args: DictConfig) -> None:
     lengths_test = []
     
     for i, (constitution, question) in enumerate(zip(constitutions, questions)):
-        print('running')
     
         if i >= 250: 
             continue
@@ -82,7 +77,6 @@ def main(args: DictConfig) -> None:
        
         length_test = len(tokenizer.encode(model_test['response'][str(i)]))
         lengths_test.append(length_test)
-    
 
         rand_number = np.random.randint(2)
         numbers.append(rand_number)
@@ -107,14 +101,11 @@ def main(args: DictConfig) -> None:
                
             prompts.append(prompt)
         
-    
-    # breakpoint()
     responses = model.batch_prompt(
         system_message=SYSTEM_MESSAGE,
         messages=prompts,
         win_rates=True,
     )
-    # breakpoint()
     
     formatted_responses = []
 
@@ -125,10 +116,9 @@ def main(args: DictConfig) -> None:
             formatted_responses.append("C")
 
     for formatted_response, number, length_base, length_test in zip(formatted_responses, numbers, lengths_base, lengths_test):
-        print(formatted_response, number)
+       
         if number == 0:
 
-            
             if 'A' in formatted_response and 'B' not in formatted_response:
                 win_rates.append((0, length_base, length_test))
                 
@@ -154,7 +144,6 @@ def main(args: DictConfig) -> None:
                 print("ERROR")
                 win_rates.append((0.5, length_base, length_test))
                 
-
     with open(f'{args.output_dir}/{args.win_rates_file_name}.json', 'w') as file:
         json.dump(win_rates, file, indent=4)
         

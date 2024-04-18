@@ -1,7 +1,7 @@
 import os
 import json
 import random
-import logging
+import fire
 import functools
 import torch.nn as nn
 import torch.multiprocessing as mp
@@ -12,6 +12,7 @@ import hydra
 from omegaconf import DictConfig, OmegaConf
 from transformers import AutoTokenizer, AutoModelForCausalLM
 from transformers.models.mixtral.modeling_mixtral import MixtralDecoderLayer
+from transformers.models.mixtral.modeling_mistral import MistralDecoderLayer
 from torch.distributed.fsdp import (
     FullyShardedDataParallel as FSDP,
     MixedPrecision,
@@ -26,11 +27,17 @@ from torch.distributed.algorithms._checkpoint.checkpoint_wrapper import (
 
 from torch.distributed.fsdp.wrap import transformer_auto_wrap_policy
 import wandb
-from typo.trainers.typo_trainer import TYPOTrainer
+from sami.trainers.sami_trainer import SAMITrainer
 from helpers import *
 
-def get_policy(blocks={MixtralDecoderLayer}):
-    """Wrapping policy setup."""
+def get_policy_mixtral(blocks={MixtralDecoderLayer}): 
+    """Wrapping policy setup mixtral."""
+    return functools.partial(
+        transformer_auto_wrap_policy, transformer_layer_cls=blocks
+    )
+    
+def get_policy_mistral(blocks={MistralDecoderLayer}):
+    """Wrapping policy setup mistral."""
     return functools.partial(
         transformer_auto_wrap_policy, transformer_layer_cls=blocks
     )
@@ -54,7 +61,6 @@ def worker_main(rank: int, world_size: int, args: DictConfig, model):
         print("Initialized process group...")
         
         if args.wandb.log:
-            print("WANDB")
             wandb.init(project=args.wandb.project, name=args.wandb.name)
 
     # tokenizer
@@ -76,71 +82,87 @@ def worker_main(rank: int, world_size: int, args: DictConfig, model):
         checkpoint_impl=CheckpointImpl.NO_REENTRANT,
     )
     
+    # check if model is mistral or mixtral
+    is_mistral = 'mistral' in args.model.name.lower()
+    
     model = FSDP(
         model,
-        auto_wrap_policy=get_policy(),
+        auto_wrap_policy=get_policy_mistral() if is_mistral else get_policy_mixtral(),
         mixed_precision=mp_policy,
         backward_prefetch=BackwardPrefetch.BACKWARD_PRE,
         sharding_strategy=ShardingStrategy.FULL_SHARD,
         device_id=torch.cuda.current_device(),
         limit_all_gathers=False,
     )
-    check_fn = lambda submodule: isinstance(submodule, MixtralDecoderLayer)
+    
+    if is_mistral:
+        check_fn = lambda submodule: isinstance(submodule, MistralDecoderLayer)
+    else: 
+        check_fn = lambda submodule: isinstance(submodule, MixtralDecoderLayer)
+        
     apply_activation_checkpointing(model, checkpoint_wrapper_fn=non_reentrant_wrapper, check_fn=check_fn)
     
     print(f"wrapped model {rank}...")
 
     # data 
     dataset_dict = json.load(open(os.path.join(args.data_path, args.data_file)))
+    
     dataset_list = [
         format_example(example) for example in dataset_dict.values()
     ][:args.n_examples]
+    
     if rank == 0:
         print(f"n examples: {len(dataset_list)}")
 
     train_dataset = [tokenize_func(example, tokenizer) for example in dataset_list]
     random.shuffle(train_dataset)
+    
     if rank == 0:
         print(len(train_dataset))
         print(f"tokenized {len(train_dataset)} training examples...")
     
     # train
-    trainer = TYPOTrainer(
+    trainer = SAMITrainer(
         model=model,
-        reference_model=None,
+        reference_model=None, # if KL should be included, add reference model 
         tokenizer=tokenizer,
         train_dataset=train_dataset,
         eval_dataset=[],
         config=args,
         local_rank=rank,
         world_size=world_size,
-        save_option="pt",
     )
     
     trainer.train()
 
-# main training script 
-@hydra.main(version_base=None, config_path="conf", config_name="train_typo_mixtral")
+
+@hydra.main(version_base=None, config_path="conf", config_name="train_sami")
 def main(args: DictConfig) -> None:
     
-    # nans 
     torch.autograd.set_detect_anomaly(True)
 
-    # seeds
     torch.cuda.manual_seed(args.training.seed)
     torch.manual_seed(args.training.seed)
     random.seed(args.training.seed)
 
-    # get model
-    model = AutoModelForCausalLM.from_pretrained(**args.model.model_config, torch_dtype=torch.bfloat16)
-    model.gradient_checkpointing_enable(gradient_checkpointing_kwargs={'use_reentrant': True})
+    # model
+    model = AutoModelForCausalLM.from_pretrained(
+        **args.model.model_config, 
+        torch_dtype=torch.bfloat16
+    )
+    
+    # activation checkpointing
+    model.gradient_checkpointing_enable(
+        gradient_checkpointing_kwargs={'use_reentrant': True}
+    )
 
-    # run with resource limits
+    # spawn with resource limits
     world_size = torch.cuda.device_count()
     soft, hard = resource.getrlimit(resource.RLIMIT_NOFILE)
     resource.setrlimit(resource.RLIMIT_NOFILE, (hard, hard))
     print(f'setting RLIMIT_NOFILE soft limit to {hard} from {soft}')
     mp.spawn(worker_main, nprocs=world_size, args=(world_size, args, model))
 
+
 if __name__ == "__main__":
-    main()
+    fire.Fire(main())

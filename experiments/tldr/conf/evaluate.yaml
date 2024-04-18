@@ -13,14 +13,14 @@ generation_config:
 
 model_config:
   model: "mistralai/Mixtral-8x7B-v0.1"
-  download_dir: "/scr/jphilipp/typo/pretrained_models/Mixtral-8x7B-v0.1"
+  download_dir: "/scr/jphilipp/sami/pretrained_models/Mixtral-8x7B-v0.1"
   dtype: auto
   quantization: null
   tensor_parallel_size: 2
 
 dataset: 
   path: openai/summarize_from_feedback
-  cache_dir: /scr/jphilipp/typo/openai/summarize_from_feedback
+  cache_dir: /scr/jphilipp/sami/openai/summarize_from_feedback
   split: validation
 
 temperatures:

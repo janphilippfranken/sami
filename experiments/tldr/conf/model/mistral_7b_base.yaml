@@ -3,9 +3,9 @@ name: mistral_7b_base
 
 model_config:
   pretrained_model_name_or_path: "mistralai/Mistral-7B-v0.1"
-  cache_dir: "/scr/jphilipp/typo/pretrained_models/Mistral-7B-v0.1"
+  cache_dir: "/scr/jphilipp/sami/pretrained_models/Mistral-7B-v0.1"
 
 tokenizer_config:
   pretrained_model_name_or_path: "mistralai/Mistral-7B-v0.1"
-  cache_dir: "/scr/jphilipp/typo/pretrained_models/Mistral-7B-v0.1"
+  cache_dir: "/scr/jphilipp/sami/pretrained_models/Mistral-7B-v0.1"
   model_max_length: 2048

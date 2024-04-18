@@ -1,4 +1,4 @@
-PROMPT_GENERATION_ITERATION_0 = """System: Summarize the post below according to the principles in the constitution.
+PROMPT_GENERATION = """System: Summarize the post below according to the principles in the constitution.
 
 ### Example Format
 Summarization Constitution: [insert constitution here]

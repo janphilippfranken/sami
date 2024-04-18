@@ -240,7 +240,6 @@ class SAMITrainer:
         eval_dataset: List[Dict],
         local_rank: int,
         world_size: int,
-        save_option: str,
     ):  
         """Intialize the samiTrainer.
         
@@ -261,7 +260,6 @@ class SAMITrainer:
         self.config = config
         self.local_rank = local_rank
         self.world_size = world_size
-        self.save_option = save_option
         
         # data loaders 
         self.train_dataloader = DataLoader(
@@ -314,7 +312,7 @@ class SAMITrainer:
         checkpoint_dir = os.path.join(self.config.training.checkpoint_dir, f"epoch-{epoch}")
         os.makedirs(checkpoint_dir, exist_ok=True)
         
-        if self.save_option == "hf": # inefficient but stores HF format directly? 
+        if self.config.training.save_option == "hf": # inefficient but stores HF format directly? 
             save_model = AutoModelForCausalLM.from_pretrained(
                 **self.config.model.model_config,
             )
@@ -326,7 +324,7 @@ class SAMITrainer:
             del save_model
             print("Deleted model...")
         
-        elif self.save_option == "pt":
+        elif self.config.training.save_option == "pt":
             torch.save(state, os.path.join(checkpoint_dir, "model.pt"))
 
     def save_checkpoint(self, epoch):
@@ -386,7 +384,7 @@ class SAMITrainer:
             )
 
             # loss = loss + beta * kl
-            adjusted_loss = loss + self.config.sami.beta * kl_div
+            adjusted_loss = loss + self.config.training.beta * kl_div
             
             return loss, adjusted_loss, batch_logprobs, kl_div
             
@@ -477,7 +475,7 @@ class SAMITrainer:
                 # logging
                 loss_value = loss.item()
                 loss_tensor = torch.tensor([loss_value], device=self.local_rank)
-                dist.all_reduce(loss_tensor, op=dist.ReduceOp.SUM)
+                dist.all_reduce(loss_tensor, op=dist.ReduceOp.SUM) # maybe all_gather_if_needed instead? 
                 reduced_loss = loss_tensor / dist.get_world_size()
                 
                 raw_loss_value = raw_loss.item() 

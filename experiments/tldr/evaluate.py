@@ -1,25 +1,23 @@
 import json
 import fire
 import hydra
-import numpy as np
-import random
 from omegaconf import DictConfig
 from tqdm import tqdm
 from datasets import load_dataset
 import torch
-from typo.models.vllm_models.inference_model import VLLMInferenceModel
+
+from sami.models.vllm_models.inference_model import VLLMInferenceModel
+
 from helpers import *
 from prompts import *
 
-np.random.seed(1)
 torch.manual_seed(1)
 torch.cuda.manual_seed(1)
 
 # main evaluation script
 @hydra.main(version_base=None, config_path="conf", config_name="evaluate")
 def main(args: DictConfig) -> None:
-    random.seed(42)
-    
+
     # model
     model = VLLMInferenceModel(
         **args.model_config,
@@ -35,15 +33,16 @@ def main(args: DictConfig) -> None:
     
     filtered_dataset = []
     filtered_ids = []
+    
     for example in dataset:
         if example['id'] not in filtered_ids:
             filtered_dataset.append(example)
             filtered_ids.append(example['id'])
+            
     filtered_dataset = filtered_dataset[args.start_example:args.max_example]
-    
-    constitution = json.load(open(f"{args.constitution_dir}/0.json"))
+
+    constitution = json.load(open(f"{args.constitution_dir}/0.json")) # only care about the positive constitution for win rates 
     constitution_positive = constitution['positive']
-  
     
     for temperature in args.temperatures:
         print(temperature)
@@ -63,7 +62,7 @@ def main(args: DictConfig) -> None:
             question = f"POST: {example['post']}"
             batch_constitutions.append(constitution_shuffled)
             
-            prompt = PROMPT_GENERATION_ITERATION_0.format(
+            prompt = PROMPT_GENERATION.format(
                 constitution=constitution_shuffled.strip(),
                 question=question.strip(),
             )
@@ -78,12 +77,11 @@ def main(args: DictConfig) -> None:
                 )
                 
                 for j, batch_response in enumerate(batch_responses):
-                    # breakpoint()
                     
                     formatted_response = f"The post {batch_response.strip().split('Human: ')[0].strip()}"
                     if '###' in formatted_response:
                         formatted_response = f"{formatted_response.split('###')[0].strip()}"
-                    # breakpoint()
+
                     all_responses['constitution'][j] = batch_constitutions[j].strip()
                     all_responses['question'][j] = batch_questions[j]
                     all_responses['response'][j] = formatted_response

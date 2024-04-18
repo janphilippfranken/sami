@@ -1,11 +1,11 @@
 model_type: huggingface
-name: mistral_7b_base
+name: mixtral_7b_base
 
 model_config:
   pretrained_model_name_or_path: "mistralai/Mixtral-8x7B-v0.1"
-  cache_dir: "/scr/jphilipp/typo/pretrained_models/Mixtral-8x7B-v0.1"
+  cache_dir: "/scr/jphilipp/sami/pretrained_models/Mixtral-8x7B-v0.1"
 
 tokenizer_config:
   pretrained_model_name_or_path: "mistralai/Mixtral-8x7B-v0.1"
-  cache_dir: "/scr/jphilipp/typo/pretrained_models/Mixtral-8x7B-v0.1"
+  cache_dir: "/scr/jphilipp/sami/pretrained_models/Mixtral-8x7B-v0.1"
   model_max_length: 2048
