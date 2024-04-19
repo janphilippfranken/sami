@@ -1,8 +1,9 @@
-# Selt-Taught Alignment with Mutual Information
+# SAMI: Self-Supervised Alignment with Mutual Information
 
 ### 🧐 What is this repo?
-This repo includes a reference implementation of the SAMI algorithm.
+This repo includes a reference implementation of SAMI. 
 
+## Setup 
 
 `python train.py \
     training.beta=$beta \
