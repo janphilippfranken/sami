@@ -1,51 +1,51 @@
-# SAMI: Self-Supervised Alignment with Mutual Information
+## SAMI: Self-Supervised Alignment with Mutual Information
 
-## Introduction
+### 🧐 What this is
 
-This repository contains a reference implementation of SAMI (Self-Supervised Alignment with Mutual Information), a novel approach for aligning language models using self-supervised learning. The repository includes the source code, experimental data, and detailed instructions for running the code and reproducing the results reported in the accompanying paper.
+This repository contains a reference implementation of SAMI (Self-Supervised Alignment with Mutual Information) using the [TL;DR](https://huggingface.co/datasets/openai/summarize_from_feedback) dataset. 
 
-## Repository Structure
+### 🚀Running the Code
 
-- `experiments/tldr/data`: Contains the data from the TL;DR experiments reported in the paper, along with responses sampled from each checkpoint used to compute win rates.
-- `experiments/tldr/conf`: Contains various configuration files for data generation, training, and evaluation.
-- `experiments/tldr/example_scripts_slurm`: Contains example Slurm scripts for running training jobs.
-- `experiments/tldr/results/responses`: Contains the responses generated during the evaluation phase.
-- `src/sami/models/openai_models/azure.py`: Contains the implementation of the Azure-based batch prompting pipeline for computing win rates.
+#### Prerequisites
 
-## Running the Code
+- Set up a conda environment (`python==3.10.0`) and install the required dependencies by running `pip install -e .`.
 
-### Prerequisites
+#### Data Generation (Optional)
 
-- Set up a Conda environment and install the required dependencies by running `pip install -e .`.
-- Ensure you have access to GPUs for training and evaluation.
+1. Adjust the `experiments/tldr/config/generate.yaml` config file to match your directories and desired configurations. Example constitutions using principles written by `mistral-7b` and `claude-opus` are provided in [constitutions_mistral](https://github.com/janphilippfranken/sami/tree/main/experiments/tldr/constitutions_mistral) and [constitutions_opus](https://github.com/janphilippfranken/sami/tree/main/experiments/tldr/constitutions_opus).
+2. Run `python generate.py` to generate your own data. By default, the generated data will be stored in `data/base`. Note that this directory is already populated with the data used in the paper if you prefer to fine-tune a model directly.
 
-### Data Generation (Optional)
+#### Training
 
-1. Adjust the `generate.yaml` config file to match your directories and desired configurations. Example configurations for `mistral-7b` and `claude-opus` are provided.
-2. Run `python generate.py` to generate your own data. By default, the generated data will be stored in `data/base`. Note that this directory is pre-populated with the data used in the paper if you prefer to fine-tune a model directly.
+1. Select a model configuration (e.g., `mistral-7b`) from the `experiments/tldr/conf/model` directory and update the `cache_dir` accordingly (e.g., `/scr/YOUR_USERNAME/samie/checkpoints`).
+2. Adjust the `train_sami.yaml` config as needed, including optional [wandb](https://wandb.ai) logging. If you set `log: true` you should have an account/make sure that you are logged in.
+3. Run training using an interactive job in slurm using the command below, or adapt the example [slurm script](https://github.com/janphilippfranken/sami/blob/main/experiments/tldr/example_scripts_slurm/train_sami_mixtral.sh) to meet your computing needs and submit it using `sbatch` (or modify the script to be a standard bash script and submit from e.g. a `tmux` window).
 
-### Training
+```bash
+python train.py \
+    training.beta=0 \
+    wandb.name="sami-lr-${lr}-iteration-${iteration}-opus" \
+    training.checkpoint_dir="$YOUR_CHECKPOINT_DIR" \
+    training.lr=5e-7 \
+    data_path="data/base" \
+    data_file="base_mistral_from_mistral_principles.json" \
+    n_examples=2000
+```
 
-1. Select a model configuration (e.g., `mistral-7b`) from the `experiments/tldr/conf/model` directory and update the `cache_dir` accordingly.
-2. Adjust the `train_sami.yaml` config as needed, including optional Weights & Biases logging. Ensure you are logged in if you set `log: true`.
-3. Run training using an interactive job in Slurm with the provided command, or adapt the example Slurm script to meet your computing needs and submit it using `sbatch`. Alternatively, modify the script to be a standard Bash script and submit using a tool like `tmux`.
+#### Evaluation
 
-### Evaluation
+1. Adjust the `experiments/tldr/config/evaluate.yaml` configuration and run `python evaluate.py`. This will write the generated responses into `experiments/tldr/results/responses`.
+2. Compute win rates by adjusting the `experiments/tldr/config/win_rates.yaml` configuration and running `python win_rates.py`. Note that this script currently uses azure, so if you dont have access to GPT-4 via azure, you might have to copy-paste the `/scr/models/openai_models/azure.py` and create your own `AsyncOpenAI` class.
 
-1. Adjust the `evaluate.yaml` configuration and run `python evaluate.py`. This will write the generated responses into `experiments/tldr/results/responses`.
-2. Compute win rates by adjusting the `win_rates.yaml` configuration and running `python win_rates.py`. Note that this script currently uses Azure, so if you lack access to GPT-4 via Azure, consider using a different pipeline for batch prompting or adapt the implementation in `azure.py` to use an AsyncOpenAI class.
+#### Running without GPUs
 
-### Running without GPUs
+If you don't have access to GPUs, you can attempt to run training using `experiments/tldr/conf/model/mistral_tiny_base`, which we tested locally on an Apple M2 Pro (2023 MacBook Pro with 16B memory).
 
-If you don't have access to GPUs, you can attempt to run training using the `mistral-tiny` configuration, which was tested locally on an Apple M2 Pro (2023 MacBook Pro with 16B memory) for debugging purposes.
-
-## Additional Resources
+### Additional Resources
 
 This repository is based on the [FSDP tutorial series](https://www.youtube.com/watch?v=8_k76AHu__s) and the [DDP tutorial series](https://www.youtube.com/watch?v=-K3bZYHYHEA&list=PL_lsbAsL_o2CSuhUhJIiW0IkdT5C2wGWj).
 
-## Citation
-
-If you find this work useful, please cite:
+### Citation
 
 If you found this work useful, please cite:
 ```bibtex
