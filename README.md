@@ -13,18 +13,18 @@ This repository contains a reference implementation of SAMI (Self-Supervised Ali
 #### Data Generation (Optional)
 
 1. Adjust the `experiments/tldr/config/generate.yaml` config file to match your directories and desired configurations. Example constitutions using principles written by `mistral-7b` and `claude-opus` are provided in [constitutions_mistral](https://github.com/janphilippfranken/sami/tree/main/experiments/tldr/constitutions_mistral) and [constitutions_opus](https://github.com/janphilippfranken/sami/tree/main/experiments/tldr/constitutions_opus).
-2. Run `python generate.py` to generate your own data. By default, the generated data will be stored in `data/base`. Note that this directory is already populated with the data used in the paper if you prefer to fine-tune a model directly.
+2. Navigate to `cd experiments/tldr` and run `python generate.py` to generate your own data. By default, the generated data will be stored in `experiments/tldr/data/base`. Note that this directory is already populated with the data used in the paper if you prefer to fine-tune a model directly.
 
 #### Training
 
-1. Select a model configuration (e.g., `mistral-7b`) from the `experiments/tldr/conf/model` directory and update the `cache_dir` accordingly (e.g., `/scr/YOUR_USERNAME/samie/checkpoints`).
-2. Adjust the `train_sami.yaml` config as needed, including optional [wandb](https://wandb.ai) logging. If you set `log: true` you should have an account/make sure that you are logged in.
-3. Run training using an interactive job in slurm using the command below, or adapt the example [slurm script](https://github.com/janphilippfranken/sami/blob/main/experiments/tldr/example_scripts_slurm/train_sami_mixtral.sh) to meet your computing needs and submit it using `sbatch` (or modify the script to be a standard bash script and submit from e.g. a `tmux` window).
+1. Select a model configuration (e.g., `mistral-7b`) from the `experiments/tldr/conf/model` directory and update the `cache_dir` accordingly (e.g., `/scr/YOUR_USERNAME/sami/checkpoints`).
+2. Adjust the `experiments/tldr/conf/train_sami.yaml` config as needed, including optional [wandb](https://wandb.ai) logging. If you set `log: true` you should have an account/make sure that you are logged in.
+3. Navigate to `cd experiments/tldr` and run training using an interactive job using the command below, or adapt the example [slurm script](https://github.com/janphilippfranken/sami/blob/main/experiments/tldr/example_scripts_slurm/train_sami_mixtral.sh) to meet your computing needs and submit it using `sbatch` (or modify the script to be a standard bash script and submit from e.g. a `tmux` window).
 
 ```bash
 python train.py \
-    training.beta=0 \
-    wandb.name="sami-lr-${lr}-iteration-${iteration}-opus" \
+    training.beta=0.0 \
+    wandb.name="$YOUR_WANDB_NAME" \
     training.checkpoint_dir="$YOUR_CHECKPOINT_DIR" \
     training.lr=5e-7 \
     data_path="data/base" \
@@ -34,8 +34,8 @@ python train.py \
 
 #### Evaluation
 
-1. Adjust the `experiments/tldr/config/evaluate.yaml` configuration and run `python evaluate.py`. This will write the generated responses into `experiments/tldr/results/responses`.
-2. Compute win rates by adjusting the `experiments/tldr/config/win_rates.yaml` configuration and running `python win_rates.py`. Note that this script currently uses azure, so if you dont have access to GPT-4 via azure, you might have to copy-paste the `/scr/models/openai_models/azure.py` and create your own `AsyncOpenAI` class.
+1. Adjust the `experiments/tldr/config/evaluate.yaml` configuration, navigate to `cd experiments/trldr` and run `python evaluate.py`. This will write the generated responses into `experiments/tldr/results/responses`.
+2. Compute win rates by adjusting the `experiments/tldr/config/win_rates.yaml` configuration and running `python win_rates.py` from the same directory. Note that this script currently uses azure, so if you dont have access to GPT-4 via azure, you might have to copy-paste the `/scr/models/openai_models/azure.py` and create your own `AsyncOpenAI` class.
 
 #### Running without GPUs
 
@@ -43,7 +43,7 @@ If you don't have access to GPUs, you can attempt to run training using `experim
 
 ### Additional Resources
 
-This repository is based on the [FSDP tutorial series](https://www.youtube.com/watch?v=8_k76AHu__s) and the [DDP tutorial series](https://www.youtube.com/watch?v=-K3bZYHYHEA&list=PL_lsbAsL_o2CSuhUhJIiW0IkdT5C2wGWj).
+This [`SAMITrainer`](https://github.com/janphilippfranken/sami/blob/main/src/sami/trainers/typo_trainer.py) and [`train.py`](https://github.com/janphilippfranken/sami/blob/main/experiments/tldr/train.py) use `FSDP` (FullyShardedDataParallel). To learn more about `FSDP`, you may find the [FSDP tutorial series](https://www.youtube.com/watch?v=8_k76AHu__s) and the [DDP tutorial series](https://www.youtube.com/watch?v=-K3bZYHYHEA&list=PL_lsbAsL_o2CSuhUhJIiW0IkdT5C2wGWj) helpful.
 
 ### Citation
 
