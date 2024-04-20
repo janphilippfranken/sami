@@ -26,9 +26,8 @@ dataset:
   cache_dir: /scr/jphilipp/sami/openai/summarize_from_feedback
   split: train
 
-filter: #  we filter these formatting errors or generic 'i'm sorry' responses.
+filter: #  we filter these formatting errors 
   - "[insert"
   - "[]"
   - "]"
-  - sorry
   - Response

@@ -20,7 +20,7 @@ cd ~/research_projects/sami/experiments/tldr
 beta=0.0    # 0 -> no KL
 lr=5e-7     # learning rate 
 iteration=1 # curr iteration
-checkpoint_dir="/scr/jphilipp/sami/trained_models/Mixtral-8x7b-v.01/checkpoints-sumarization-opus/sami-${lr}-iteration-${iteration}-opus"
+checkpoint_dir="/scr/YOUR_PATH/sami-${lr}-iteration-${iteration}-opus"
 
 python train.py \
     training.beta=$beta \

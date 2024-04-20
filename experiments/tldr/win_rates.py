@@ -12,7 +12,6 @@ from sami.models.openai_models.azure import AsyncAzureChatLLM
 
 from transformers import AutoTokenizer
 
-
 from prompts import GPT4_WIN_RATE, SYSTEM_MESSAGE
 
 

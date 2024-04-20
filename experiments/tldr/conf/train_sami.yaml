@@ -2,6 +2,10 @@ hydra:
   run:
     dir: hydra-configs
 
+# model
+defaults:
+  - model: mixtral_8x7b_base
+
 # data
 data_path: data/base
 data_file: base_mixtral_from_mistral_principles.json
@@ -9,20 +13,19 @@ n_examples: null
 n_responses: 2
 n_constitutions: 2
 
-defaults:
-  - model: mixtral_8x7b_base
-
+# wandb
 wandb:
   project: sami-summarization-mixtral
   name: sami
   log: true
 
+# training
 training:
   evaluate_before_training: false
   evaluate: false
   n_epochs: 1
   lr: 5e-7
-  train_batch_size: 1
+  train_batch_size: 1 # currently implementation only supports one example at a time; however, the actual batch size is n_constitutions * n_constitutions for each x 
   eval_batch_size: 1
   train_split: 1.0
   checkpoint_dir: ""
