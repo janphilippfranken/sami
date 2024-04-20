@@ -13,7 +13,7 @@ This repository contains a reference implementation of SAMI (Self-Supervised Ali
 #### Data Generation (Optional)
 
 1. Adjust the `experiments/tldr/config/generate.yaml` config file to match your directories and desired configurations. Example constitutions using principles written by `mistral-7b` and `claude-opus` are provided in [constitutions_mistral](https://github.com/janphilippfranken/sami/tree/main/experiments/tldr/constitutions_mistral) and [constitutions_opus](https://github.com/janphilippfranken/sami/tree/main/experiments/tldr/constitutions_opus).
-2. Navigate to `cd experiments/tldr` and run `python generate.py` to generate your own data. By default, the generated data will be stored in `experiments/tldr/data/base`. Note that this directory is already populated with the data used in the paper if you prefer to fine-tune a model directly.
+2. Navigate to `cd experiments/tldr` and run `python generate.py` to generate your own data. By default, the generated data will be stored in `experiments/tldr/data/base`. Note that this directory is already populated with the data used in the paper if you prefer to finetune a model directly.
 
 #### Training
 
@@ -43,7 +43,7 @@ If you don't have access to GPUs, you can attempt to run training using `experim
 
 ### Additional Resources
 
-This [`SAMITrainer`](https://github.com/janphilippfranken/sami/blob/main/src/sami/trainers/typo_trainer.py) and [`train.py`](https://github.com/janphilippfranken/sami/blob/main/experiments/tldr/train.py) use `FSDP` (FullyShardedDataParallel). To learn more about `FSDP`, you may find the [FSDP tutorial series](https://www.youtube.com/watch?v=8_k76AHu__s) and the [DDP tutorial series](https://www.youtube.com/watch?v=-K3bZYHYHEA&list=PL_lsbAsL_o2CSuhUhJIiW0IkdT5C2wGWj) helpful.
+This [`SAMITrainer`](https://github.com/janphilippfranken/sami/blob/main/src/sami/trainers/typo_trainer.py#L232) and [`train.py`](https://github.com/janphilippfranken/sami/blob/main/experiments/tldr/train.py) use `FSDP` (FullyShardedDataParallel). To learn more about `FSDP`, you may find the [FSDP tutorial series](https://www.youtube.com/watch?v=8_k76AHu__s) and the [DDP tutorial series](https://www.youtube.com/watch?v=-K3bZYHYHEA&list=PL_lsbAsL_o2CSuhUhJIiW0IkdT5C2wGWj) helpful.
 
 ### Citation
 
