@@ -4,11 +4,11 @@
 
 This repository contains a reference implementation of SAMI (Self-Supervised Alignment with Mutual Information) using the [TL;DR](https://huggingface.co/datasets/openai/summarize_from_feedback) dataset. 
 
-### 🚀Running the Code
+### 🚀 Running the Code
 
 #### Prerequisites
 
-- Set up a conda environment (`python==3.10.0`) and install the required dependencies by running `pip install -e .`.
+- Set up a conda environment (we used `python==3.10.0`) and install the required dependencies by running `pip install -e .`
 
 #### Data Generation (Optional)
 
