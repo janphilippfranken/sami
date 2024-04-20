@@ -34,7 +34,7 @@ python train.py \
 
 #### Evaluation
 
-1. Adjust the `experiments/tldr/config/evaluate.yaml` configuration, navigate to `cd experiments/trldr` and run `python evaluate.py`. This will write the generated responses into `experiments/tldr/results/responses`.
+1. Adjust the `experiments/tldr/config/evaluate.yaml` configuration, navigate to `cd experiments/tldr` and run `python evaluate.py`. This will write the generated responses into `experiments/tldr/results/responses`.
 2. Compute win rates by adjusting the `experiments/tldr/config/win_rates.yaml` configuration and running `python win_rates.py` from the same directory. Note that this script currently uses azure, so if you dont have access to GPT-4 via azure, you might have to copy-paste the `/scr/models/openai_models/azure.py` and create your own `AsyncOpenAI` class.
 
 #### Running without GPUs
@@ -43,7 +43,7 @@ If you don't have access to GPUs, you can attempt to run training using `experim
 
 ### Additional Resources
 
-This [`SAMITrainer`](https://github.com/janphilippfranken/sami/blob/main/src/sami/trainers/typo_trainer.py#L232) and [`train.py`](https://github.com/janphilippfranken/sami/blob/main/experiments/tldr/train.py) use `FSDP` (FullyShardedDataParallel). To learn more about `FSDP`, you may find the [FSDP tutorial series](https://www.youtube.com/watch?v=8_k76AHu__s) and the [DDP tutorial series](https://www.youtube.com/watch?v=-K3bZYHYHEA&list=PL_lsbAsL_o2CSuhUhJIiW0IkdT5C2wGWj) helpful.
+The [`SAMITrainer`](https://github.com/janphilippfranken/sami/blob/main/src/sami/trainers/typo_trainer.py#L232) and [`train.py`](https://github.com/janphilippfranken/sami/blob/main/experiments/tldr/train.py) use `FSDP` (FullyShardedDataParallel). To learn more about `FSDP`, you may find the [FSDP tutorial series](https://www.youtube.com/watch?v=8_k76AHu__s) and the [DDP tutorial series](https://www.youtube.com/watch?v=-K3bZYHYHEA&list=PL_lsbAsL_o2CSuhUhJIiW0IkdT5C2wGWj) helpful.
 
 ### Citation
 
