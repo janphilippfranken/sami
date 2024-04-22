@@ -1,5 +1,0 @@
-model_dir: results/responses
-baseline: base-mistral-mistral-constitution-temperature-0.0.json
-test: iteration-1-epoch-0.12-mistral-mistral-constitution-temperature-0.0.json
-output_dir:  ""
-win_rates_file_name: ""

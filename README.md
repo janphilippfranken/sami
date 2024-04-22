@@ -35,7 +35,6 @@ python train.py \
 #### Evaluation
 
 1. Adjust the `experiments/tldr/config/evaluate.yaml` configuration, navigate to `cd experiments/tldr` and run `python evaluate.py`. This will write the generated responses into `experiments/tldr/results/responses`.
-2. Compute win rates by adjusting the `experiments/tldr/config/win_rates.yaml` configuration and running `python win_rates.py` from the same directory. Note that this script currently uses azure, so if you dont have access to GPT-4 via azure, you might have to copy-paste the `/scr/models/openai_models/azure.py` and create your own `AsyncOpenAI` class. FYI: We used the `gpt-4-0613` snapshot for all evaluations. 
 
 #### Running without GPUs
 
