@@ -57,7 +57,3 @@ If you found this work useful, please cite:
       archivePrefix={arXiv},
       primaryClass={cs.CL}
 }
-
-
-
-
