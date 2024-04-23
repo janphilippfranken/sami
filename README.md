@@ -49,13 +49,13 @@ The [`SAMITrainer`](https://github.com/janphilippfranken/sami/blob/main/src/sami
 
 If you found this work useful, please cite:
 ```bibtex
-@article{ref,
-    title={ref}, 
-    author={ref},
-    year={2024},
-    eprint={ref},
-    archivePrefix={arXiv},
-    primaryClass={cs.CL}
+@article{fränken2024selfsupervised,
+      title={Self-Supervised Alignment with Mutual Information: Learning to Follow Principles without Preference Labels}, 
+      author={Jan-Philipp Fränken and Eric Zelikman and Rafael Rafailov and Kanishk Gandhi and Tobias Gerstenberg and Noah D. Goodman},
+      year={2024},
+      eprint={2404.14313},
+      archivePrefix={arXiv},
+      primaryClass={cs.CL}
 }
 
 
