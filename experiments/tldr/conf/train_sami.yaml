@@ -29,8 +29,6 @@ training:
   eval_batch_size: 1
   train_split: 1.0
   checkpoint_dir: ""
-  max_grad_norm: 1.0
-  num_warmup_steps: 1
   gradient_accumulation_steps: 16
   save_after_n_steps: 32
   seed: 42

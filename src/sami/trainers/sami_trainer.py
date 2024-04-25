@@ -287,14 +287,14 @@ class SAMITrainer:
             self.optimizer = RMSprop(model.parameters(), lr=config.training.lr)
  
         # scheduler 
-        self.scheduler = get_scheduler(
-            name="linear", 
-            optimizer=self.optimizer, 
-            num_warmup_steps=config.training.num_warmup_steps, 
-            num_training_steps=(
-                len(self.train_dataloader) * self.config.training.n_epochs
-                ) // config.training.gradient_accumulation_steps,
-        )
+        # self.scheduler = get_scheduler(
+        #     name="linear", 
+        #     optimizer=self.optimizer, 
+        #     num_warmup_steps=config.training.num_warmup_steps, 
+        #     num_training_steps=(
+        #         len(self.train_dataloader) * self.config.training.n_epochs
+        #         ) // config.training.gradient_accumulation_steps,
+        # )
 
         # writing checkpoints
         self.checkpoint_dir = config.training.checkpoint_dir
@@ -468,9 +468,7 @@ class SAMITrainer:
                 
                 # accumulate
                 if (step + 1) % self.config.training.gradient_accumulation_steps == 0 or (step + 1) == len(self.train_dataloader):
-                    self.model.clip_grad_norm_(self.config.training.max_grad_norm)
                     self.optimizer.step()
-                    self.scheduler.step()
 
                 # logging
                 loss_value = loss.item()
