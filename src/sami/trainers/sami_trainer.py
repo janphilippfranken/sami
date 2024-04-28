@@ -82,7 +82,7 @@ def _get_mask(
     ) 
 
 
-def _get_batch_logprobs(
+def get_batch_logprobs(
     logits: torch.FloatTensor,
     labels: torch.LongTensor,
     ignore_idx: int = -100,
@@ -351,7 +351,7 @@ class SAMITrainer:
         # get logprobs for policy model 
         logits, labels = prepare_logits_labels(model, self.tokenizer, batch)
         
-        batch_logprobs = _get_batch_logprobs(logits, labels)
+        batch_logprobs = get_batch_logprobs(logits, labels)
         
         # reshape to be n_constitutions * n_responses
         batch_logprobs = batch_logprobs.view(self.config.n_constitutions,  self.config.n_responses)
