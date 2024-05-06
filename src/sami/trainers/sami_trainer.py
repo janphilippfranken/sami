@@ -73,6 +73,7 @@ def _get_mask(
     prompt_mask = attention_mask.to(torch.bool) # mask prompt 
     response_mask = labels == pad_token_id      # mask padding
     
+    # NOTE: this also masks the first eos token which is on purpose as during generation, we 'slice' the responses. 
     return torch.logical_or(
         prompt_mask,       # mask prompt
         torch.logical_and( # mask padding but not prompt
