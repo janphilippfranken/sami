@@ -81,6 +81,42 @@ def _get_mask(
             response_mask,
         ),
     ) 
+    
+    
+def _get_mask_without_masking_eos(
+    attention_mask: torch.LongTensor,
+    labels: torch.LongTensor,
+    model: torch.nn.Module,
+    pad_token_id: int,
+) -> torch.BoolTensor:
+    """Returns a mask for the loss computation.
+    
+    Args:
+        attention_mask: The attention mask of the prompt without final response. Shape: (batch_size, sequence_length).
+        labels: The labels of the prompt including the final response. Shape: (batch_size, sequence_length).
+        model: torch.nn.Module
+        pad_token_id: The id of the padding token.
+    
+    Returns:
+        mask: The mask for the loss computation. Shape: (batch_size, sequence_length).
+    """
+    prompt_mask = attention_mask.to(torch.bool) # mask prompt 
+    
+    # find first occurrence of pad which is eos token and do not mask that 
+    is_pad = labels == pad_token_id
+    cumsum_pad = torch.cumsum(is_pad, dim=1)
+    eos_mask = cumsum_pad == 1
+    eos_mask = eos_mask.to(model.device)
+    response_mask = torch.logical_and(is_pad, ~eos_mask)
+    response_mask = torch.logical_and(labels == pad_token_id, torch.logical_not(eos_mask))  # mask padding
+     
+    return torch.logical_or(
+        prompt_mask,       # mask prompt
+        torch.logical_and( # mask padding but not prompt
+            torch.logical_not(prompt_mask),
+            response_mask,
+        ),
+    ) 
 
 
 def get_batch_logprobs(
