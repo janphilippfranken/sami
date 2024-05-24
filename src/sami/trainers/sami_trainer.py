@@ -497,8 +497,6 @@ class SAMITrainer:
             for step, batch in tqdm.tqdm(enumerate(self.train_dataloader), desc=f"Running epoch: {epoch}"):
                 batch = {k: v.to(self.local_rank) for k, v in batch.items()}
                 
-                # train
-                self.optimizer.zero_grad()
                 raw_loss, loss, batch_logprobs, kl_div = self._run_batch(batch)
    
                 (loss / self.config.training.gradient_accumulation_steps).backward()
@@ -506,6 +504,7 @@ class SAMITrainer:
                 # accumulate
                 if (step + 1) % self.config.training.gradient_accumulation_steps == 0 or (step + 1) == len(self.train_dataloader):
                     self.optimizer.step()
+                    self.optimizer.zero_grad()
 
                 # logging
                 loss_value = loss.item()
